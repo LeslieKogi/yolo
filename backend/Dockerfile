@@ -1,5 +1,5 @@
 # Use an official Node runtime as a parent image
-FROM node:14 AS build
+FROM node:14-slim AS build
 
 # Set the working directory in the container
 WORKDIR /usr/src/app
@@ -18,7 +18,8 @@ FROM alpine:3.16.7
 
 WORKDIR /app
 
-RUN apk update && apk add --update nodejs
+#installs node.js and npm
+RUN apk update && apk add --update nodejs npm 
 
 COPY --from=build /usr/src/app /app
 
