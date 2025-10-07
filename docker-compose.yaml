@@ -18,7 +18,7 @@ services:
     stdin_open: true
     tty: true
     ports:
-      - "3000:3000"
+      - "3000:80"
     depends_on: 
       - yolo-backend 
     networks:
@@ -36,6 +36,8 @@ services:
       - "5000:5000"
     depends_on: 
       - app-ip-mongo
+    environment:
+      - MONGODB_URI=mongodb://app-ip-mongo:27017/yolomy
     networks:
       - app-net
 
