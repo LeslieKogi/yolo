@@ -48,7 +48,8 @@ app-mongo (MongoDB)
 - The backend logs show “Database connected successfully,” confirming a working connection to MongoDB
 - Although the frontend currently loads and the containers communicate, the product data is not yet displaying on the UI
  *What I did to attempt resoleve the issue* - Updated the API URLs inside the frontend’s fetching components to use the internal Docker service name (yolo-backend) instead of localhost . I also Modified the proxy URL inside client/package.json from
-"proxy": "http://localhost:5000" to "proxy": "http://yolo-backend:5000"
+"proxy": "http://localhost:5000" to "proxy": "http://yolo-backend:5000" 
+(I was not able to fix the issue)
 
 # Deployment of images 
 - I tagged the images over semver conventions. 
