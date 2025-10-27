@@ -1,0 +1,22 @@
+---
+# tasks file for backend
+- name: Pull backend image from Docker Hub
+  community.docker.docker_image:
+    name: thandie/yolo-backend
+    tag: "1.0.2"
+    source: pull
+  tags: backend
+
+- name: Run backend container
+  community.docker.docker_container:
+    name: yolo-backend
+    image: thandie/yolo-backend:1.0.2
+    state: started
+    restart_policy: always
+    networks:
+      - name: app-net
+    env:
+      MONGODB_URI: mongodb://app-mongo:27017/yolomy
+    published_ports:
+          - "5000:5000"
+  tags: backend

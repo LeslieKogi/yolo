@@ -1,0 +1,15 @@
+---
+# tasks file for database
+- name: Run MongoDB container
+  community.docker.docker_container:
+    name: app-mongo
+    image: mongo
+    state: started
+    restart_policy: always
+    networks:
+      - name: app-net
+    volumes:
+      - app-mongo-data:/data/db
+    ports:
+      - "27017:27017"
+  tags: database

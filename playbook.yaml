@@ -1,113 +1,26 @@
 - hosts: all
   become: yes
-  tasks:
-    - name: Ensure git is installed
-      apt:
-        name: git
-        state: present
-
-    - name: Clone YOLO repository
-      git:
-        repo: 'https://github.com/LeslieKogi/yolo.git'
-        dest: /home/vagrant/yolo
-        version: master 
-
-    - name: Update and upgrade apt packages
-      apt:
-        update_cache: yes
-        upgrade: yes
-      tags: setup
-
-    - name: Install Docker
-      apt:
-        name: docker.io
-        state: present
-      tags: docker  
-
-    - name: Install pyton3-pip
-      apt:
-        name: python3-pip
-        state: present
-        update_cache: yes
-      tags: docker
-
-    - name: Install Docker SDK for Python
-      pip:
-        name: docker
-      tags: docker
-
-    - name: Create Docker network
-      community.docker.docker_network:
-       name: app-net
-       driver: bridge
-       ipam_config:
-        - subnet: 172.20.0.0/16
-          iprange: 172.20.0.0/16
-       attachable: yes
-      tags: docker
-
-    - name: Create Volume
-      community.docker.docker_volume:
-        name: app-mongo-data
-        driver: local
-      tags: docker 
-
-    - name: Pull backend image from Docker Hub
-      community.docker.docker_image:
-        name: thandie/yolo-backend
-        tag: "1.0.2"
-        source: pull
-      tags: backend
-
-    
-
-    - name: Pull frontend image from Docker Hub
-      community.docker.docker_image:
-        name: thandie/yolo-frontend
-        tag: "1.0.3"
-        source: pull
-      tags: frontend
+  roles:
+    - basic-setup
+    - docker
+    - database
+    - backend
+    - frontend
   
-    - name: Run MongoDB container
-      community.docker.docker_container:
-        name: app-mongo
-        image: mongo
-        state: started
-        restart_policy: always
-        networks:
-          - name: app-net
-        volumes:
-          - app-mongo-data:/data/db
-        ports:
-          - "27017:27017"
-      tags: database
 
-    - name: Run backend container
-      community.docker.docker_container:
-        name: yolo-backend
-        image: thandie/yolo-backend:1.0.2
-        state: started
-        restart_policy: always
-        networks:
-          - name: app-net
-        env:
-          MONGODB_URI: mongodb://app-mongo:27017/yolomy
-        published_ports:
-          - "5000:5000"
-      tags: backend
+
     
 
-    - name: Run frontend container
-      community.docker.docker_container:
-        name: yolo-frontend
-        image: thandie/yolo-frontend:1.0.3
-        state: started
-        restart_policy: always
-        networks:
-          - name: app-net
-        published_ports:
-          - "3000:80"
-      tags: frontend
+    
+
+    
+  
+    
+
+   
+    
+
+    
 
 
     

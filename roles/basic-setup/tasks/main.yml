@@ -1,0 +1,19 @@
+---
+# tasks file for basic-setup
+
+- name: Ensure git is installed
+  apt:
+     name: git
+     state: present
+
+- name: Update and upgrade apt packages
+  apt:
+    update_cache: yes
+    upgrade: yes
+  tags: setup
+
+- name: Clone YOLO repository
+  git:
+    repo: 'https://github.com/LeslieKogi/yolo.git'
+    dest: /home/vagrant/yolo
+    version: master 
