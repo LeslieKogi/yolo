@@ -46,4 +46,68 @@
        attachable: yes
       tags: docker
 
+    - name: Create Volume
+      community.docker.docker_volume:
+        name: app-mongo-data
+        driver: local
+      tags: docker 
+
+    - name: Pull backend image from Docker Hub
+      community.docker.docker_image:
+        name: thandie/yolo-backend
+        tag: "1.0.2"
+        source: pull
+      tags: backend
+
+    
+
+    - name: Pull frontend image from Docker Hub
+      community.docker.docker_image:
+        name: thandie/yolo-frontend
+        tag: "1.0.2"
+        source: pull
+      tags: frontend
+  
+    - name: Run MongoDB container
+      community.docker.docker_container:
+        name: app-mongo
+        image: mongo
+        state: started
+        restart_policy: always
+        networks:
+          - name: app-net
+        volumes:
+          - app-mongo-data:/data/db
+        ports:
+          - "27017:27017"
+      tags: database
+
+    - name: Run backend container
+      community.docker.docker_container:
+        name: yolo-backend
+        image: thandie/yolo-backend:1.0.2
+        state: started
+        restart_policy: always
+        networks:
+          - name: app-net
+        env:
+          MONGODB_URI: mongodb://app-mongo:27017/yolomy
+        published_ports:
+          - "5000:5000"
+      tags: backend
+    
+
+    - name: Run frontend container
+      community.docker.docker_container:
+        name: yolo-frontend
+        image: thandie/yolo-frontend:1.0.2
+        state: started
+        restart_policy: always
+        networks:
+          - name: app-net
+        published_ports:
+          - "3000:80"
+      tags: frontend
+
+
     
