@@ -64,7 +64,7 @@
     - name: Pull frontend image from Docker Hub
       community.docker.docker_image:
         name: thandie/yolo-frontend
-        tag: "1.0.2"
+        tag: "1.0.3"
         source: pull
       tags: frontend
   
@@ -100,7 +100,7 @@
     - name: Run frontend container
       community.docker.docker_container:
         name: yolo-frontend
-        image: thandie/yolo-frontend:1.0.2
+        image: thandie/yolo-frontend:1.0.3
         state: started
         restart_policy: always
         networks:
