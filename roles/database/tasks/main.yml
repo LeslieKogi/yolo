@@ -2,14 +2,14 @@
 # tasks file for database
 - name: Run MongoDB container
   community.docker.docker_container:
-    name: app-mongo
-    image: mongo
+    name: "{{ db_container_name }}"
+    image: "{{ db_image }}"
     state: started
     restart_policy: always
     networks:
-      - name: app-net
+      - name: "{{ db_network }}"
     volumes:
-      - app-mongo-data:/data/db
+      - "{{ db_volume }}"
     ports:
-      - "27017:27017"
+      - "{{ db_port }}"
   tags: database

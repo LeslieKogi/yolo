@@ -1,2 +1,7 @@
 ---
 # vars file for frontend
+frontend_image_name: thandie/yolo-frontend
+frontend_image_tag: "1.0.4"
+frontend_container_name: yolo-frontend
+frontend_port: "3000:3000"
+frontend_network: app-net

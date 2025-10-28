@@ -1,2 +1,7 @@
 ---
 # vars file for database
+db_container_name: app-mongo
+db_image: mongo
+db_network: app-net
+db_volume: app-mongo-data:/data/db
+db_port: "27017:27017"

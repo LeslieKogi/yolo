@@ -2,21 +2,20 @@
 # tasks file for backend
 - name: Pull backend image from Docker Hub
   community.docker.docker_image:
-    name: thandie/yolo-backend
-    tag: "1.0.2"
+    name: "{{ backend_image_name }}"
+    tag: "{{ backend_image_tag }}"
     source: pull
   tags: backend
 
 - name: Run backend container
   community.docker.docker_container:
-    name: yolo-backend
-    image: thandie/yolo-backend:1.0.2
+    name: "{{ backend_container_name }}"
+    image: "{{ backend_image_name }}:{{ backend_image_tag }}"
     state: started
     restart_policy: always
     networks:
-      - name: app-net
-    env:
-      MONGODB_URI: mongodb://app-mongo:27017/yolomy
+      - name: "{{ backend_network }}"
+    env: "{{ backend_env }}"
     published_ports:
-          - "5000:5000"
+          - "{{ backend_port }}"
   tags: backend

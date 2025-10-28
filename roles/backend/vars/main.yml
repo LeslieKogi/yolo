@@ -1,2 +1,9 @@
 ---
 # vars file for backend
+backend_image_name: thandie/yolo-backend
+backend_image_tag: "1.0.2"
+backend_container_name: yolo-backend
+backend_port: "5000:5000"
+backend_network: app-net
+backend_env:
+  MONGODB_URI: mongodb://app-mongo:27017/yolomy

@@ -2,19 +2,19 @@
 # tasks file for frontend
 - name: Pull frontend image from Docker Hub
   community.docker.docker_image:
-    name: thandie/yolo-frontend
-    tag: "1.0.3"
+    name: "{{ frontend_image_name }}"
+    tag: "{{ frontend_image_tag }}"
     source: pull
   tags: frontend
 
 - name: Run frontend container
   community.docker.docker_container:
-   name: yolo-frontend
-   image: thandie/yolo-frontend:1.0.3
+   name: "{{ frontend_container_name }}"
+   image: "{{ frontend_image_name }}:{{ frontend_image_tag }}"
    state: started
    restart_policy: always
    networks:
-    - name: app-net
+    - name: "{{ frontend_network }}"
    published_ports:
-    - "3000:80"
+    - "{{ frontend_port }}"
   tags: frontend
