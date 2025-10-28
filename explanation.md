@@ -1,64 +1,116 @@
-### Explanation
+## Project Overview
+This project automates the deployment of the YOLO e-commerce application using Vagrant, Ansible, and Docker.  
+The Ansible playbook provisions a virtual machine, installs Docker, pulls the required images, creates a Docker network and volume, and runs three main containers: MongoDB, the backend, and the frontend.
 
-## Choice of base image
-1. For yolo-backend :
- - I changed the base image from **node:14** to **node:14-slim**, which is a lighter, minimal variant of Node.js 14.
-   This helps reduce the overall image size while providing all the necessary dependancies for running a Node.js server.
-
- - Multi- stage build was used to reduce the size of an image .I used  **alpine 3.16.7** which is lightweight.
-
-2. For yolo-frontend :
- -  I retained the **node:14-slim** base image for the build stage since it is efficient and works well for building React applications.
-
- - For the production stage, I switched to **nginx:alpine** instead of **alpine:3.16.7**, because nginx is optimized for serving static files efficiently. (using it also reduces the size of the image)
-
-## Dockerfile directives used
-- I retained most of the directives used in the original repository.
 ---
-1. *FROM* [It specifies the base image which the new image will be built on]
-2. *WORKDIR* [It sets the working directory in the container]
-3. *COPY* [It coppies the files containing the dependancies into the container ]
-4. *RUN* [used to run application dependancies or build the application during image creation ]
-5. *EXPOSE* [used to expose the port the app runs on]
-6. *CMD* [used to define the command that will run the application]
 
-## Docker-compose networking
-- I used a custom bridge network **app-net** that allows inter-container communication.Port mapping made the service acessible externaly
+## Execution Order
+Ansible playbooks run tasks sequentially from top to bottom. The order of roles matters because each one depends on the successful completion of the previous step.
 
-- Port 3000 on the host maps to port 80 in the frontend container, for acessing the React app through the browser.
-- Port 5000 maps to the backent API 
-- Port 27017 exposes the MongoDB service
+1. **basic-setup** – prepares the system.
+2. **docker** – installs Docker and sets up Docker dependencies.
+3. **database** – runs MongoDB.
+4. **backend** – runs the backend service.
+5. **frontend** – runs the frontend interface.
 
-## Docker volumes 
-- I defined a docker volume called **app-mongo-data** which is mounted inside the MongoDB container **app-ip-mongo**
-the volume is used for data persistence.
+---
 
-## Running the appliaction
-- The application successfully runs from three containers:
+## Role Breakdown
 
-yolo-frontend (React)
+### 1. basic-setup
+**Purpose:** Prepare the system and clone the project repository.
 
-yolo-backend (Node.js/Express)
+**Tasks:**
+- Update and upgrade apt packages.
+- Install git.
+- Clone the YOLO repository from GitHub.
 
-app-mongo (MongoDB)
+**Modules used:**
+- `apt` for package installation and updates.
+- `git` for cloning the project repository.
 
-- Each container runs as an isolated microservice connected through a custom bridge network (app-net)
-- The frontend loads correctly on the browser through port 3000 (mapped from container port 80).
-- The backend server runs on port 5000, responding with “Cannot GET /”, which indicates the service is active.
-- The backend logs show “Database connected successfully,” confirming a working connection to MongoDB
-- Although the frontend currently loads and the containers communicate, the product data is not yet displaying on the UI
- *What I did to attempt resoleve the issue* - Updated the API URLs inside the frontend’s fetching components to use the internal Docker service name (yolo-backend) instead of localhost . I also Modified the proxy URL inside client/package.json from
-"proxy": "http://localhost:5000" to "proxy": "http://yolo-backend:5000" 
-(I was not able to fix the issue)
+**Reasoning:**  
+Before installing Docker or running containers, the system must be up-to-date and have the source code available locally.
 
-# Deployment of images 
-- I tagged the images over semver conventions. 
+---
 
-- Below are the screenshots of my images on Dockerhub
---- 
-![Screenshot of DockerHub showing image ](./Screenshot%20from%202025-10-07%2017-24-29.png)
-![Screenshot of DockerHub showing image ](./yolo-frontend%20image.png)
-![Screenshot of DockerHub showing image ](./yolo-backend%20image.png)
+### 2. docker
+**Purpose:** Install Docker and Python dependencies, create the Docker network and volume.
+
+**Tasks:**
+- Install Docker and Python3-pip.
+- Install Docker SDK for Python.
+- Create a Docker network named `app-net`.
+- Create a Docker volume named `app-mongo-data`.
+
+**Modules used:**
+- `apt` for installing system packages.
+- `pip` for installing the Docker SDK.
+- `community.docker.docker_network` for creating Docker networks.
+- `community.docker.docker_volume` for creating Docker volumes.
+
+**Reasoning:**  
+All Docker-related dependencies and configurations must exist before containers can be created.
+
+---
+
+### 3. database
+**Purpose:** Start the MongoDB container for data storage.
+
+**Tasks:**
+- Run the MongoDB container using the `mongo` image.
+- Attach the container to the Docker network `app-net`.
+- Mount the volume `app-mongo-data`.
+- Map port `27017` to the host.
+
+**Modules used:**
+- `community.docker.docker_container`
+
+**Reasoning:**  
+The backend depends on the database. It must start before the backend container to ensure the backend connects successfully.
+
+---
+
+### 4. backend
+**Purpose:** Run the YOLO backend service.
+
+**Tasks:**
+- Pull the backend image from Docker Hub.
+- Start the backend container.
+- Connect it to `app-net`.
+- Expose port `5000:5000`.
+- Set environment variable `MONGODB_URI` to connect to MongoDB.
+
+**Modules used:**
+- `community.docker.docker_image`
+- `community.docker.docker_container`
+
+**Reasoning:**  
+The backend must start after the database, as it connects to MongoDB for data operations.
+
+---
+
+### 5. frontend
+**Purpose:** Run the YOLO frontend (user interface).
+
+**Tasks:**
+- Pull the frontend image from Docker Hub.
+- Run the frontend container.
+- Connect it to `app-net`.
+- Expose port `3000:80`.
+
+**Modules used:**
+- `community.docker.docker_image`
+- `community.docker.docker_container`
+
+**Reasoning:**  
+The frontend runs last because it relies on the backend being up and reachable.
+
+---
+
+## Variables
+The backend, frontend, and database roles have a `vars/main.yml` file that defines variables such as image name, tag, container name, port, and network.
+
 
 
 
