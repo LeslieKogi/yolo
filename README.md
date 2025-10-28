@@ -2,95 +2,49 @@
 
 ## Project Overview
 
-- The YOLO E-Commerce project is a fully containerized web application that demonstrates the use of Docker and Docker Compose to build, deploy, and orchestrate a multi-service application.
+This project automates the deployment of the **YOLO e-commerce web application** using **Vagrant**, **Ansible**, and **Docker**.  
+It provisions a virtual machine, installs Docker, pulls the necessary container images from Docker Hub, and runs the application stack (MongoDB, backend, frontend) in isolated containers.
 
-### Components:
+The goal of this project is to demonstrate **Infrastructure as Code ** using **Ansible roles**
 
-- Frontend => React app served via Nginx [port 3000 -> 80]
+## Setup Instructions
 
-- Backend => Node.js + Express server [port 5000]
+### 1. Prerequisites
+Ensure the following are installed on your host machine:
+- Vagrant
+- VirtualBox
+- Git
 
-- Database => MongoDB [port 27017]
-
-All the components were separated into micro services and connected using docker networksand volumes to enable them 
-to persist data storage and communication between the containers.
-
-### How to run the application
-
-#### prerequisites
-- Docker installed in your system
-- Docker compose plugin installed
-
-1. Clone the repo
-
-```
+### 2. Clone this repository
+```bash
 git clone https://github.com/LeslieKogi/yolo.git
 cd yolo
 ```
-2. Build and start the containers
 
+### 3. Start and provision the VM
+```bash
+vagrant provision
 ```
-docker compose up
+
+### 4.Verify setup
+```bash
+vagrant ssh
+docker ps
 ```
 
-## Docker Setup Summary
-- There are two docker files, one in the frontend and the other in the backend
-- The app uses a shared Docker bridge network (app-net)
-- MongoDB uses a volume (app-mong-data) for persistence
+## Summary
 
-There is futher explanation in the explanation.md 
+- The Vagrantfile provisions the virtual machine, ansible runs inside the VM
+- The playbook executes the roles in sequence(basic-setup -> docker -> database -> backend -> frontend )
+- The roles install dependancies, pull images and start containers.
+- The application becomes accessible through the forwarded ports.
 
-## Folder Structure 
+## Screenshots
+- Results of running Vagrant provision
+ ![Sucessful vagrant provision](./sucessful%20provision.png)
 
-## Repository Structure
-```
-.
-├── ansible.cfg
-├── backend
-│   ├── Dockerfile
-│   ├── models
-│   ├── node_modules
-│   ├── package.json
-│   ├── package-lock.json
-│   ├── routes
-│   ├── server.js
-│   └── upload.js
-├── backend-deployment.yaml
-├── client
-│   ├── Dockerfile
-│   ├── node_modules
-│   ├── package.json
-│   ├── package-lock.json
-│   ├── public
-│   ├── README.md
-│   └── src
-├── docker-compose.yaml
-├── explanation.md
-├── frontend-deployment.yaml
-├── hosts
-├── image.png
-├── inventory.yml
-├── playbook.yml
-├── README.md
-├── roles
-│   ├── backend-deployment
-│   ├── frontend-deployment
-│   └── setup-mongodb
-├── Screenshot from 2025-10-07 17-24-29.png
-├── Structure
-├── Vagrantfile
-├── yolo-backend image.png
-└── yolo-frontend image.png
+- Containers running in VM
+ ![Containers running in VM ](./VM%20containers.png)
 
-```
----
-
-## DockerHub Images 
-- Frontend=>	*thandie/yolo-frontend*   	1.0.1
-- Backend=>   *thandie/yolo-backend*       1.0.0
-
-![Screenshot of DockerHub showing image ](./yolo-frontend%20image.png)
-![Screenshot of DockerHub showing image ](./yolo-backend%20image.png)
-
-# Author
+### Author 
 Leslie Kogi
