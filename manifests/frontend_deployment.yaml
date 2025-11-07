@@ -1,0 +1,18 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: frontend-yolo
+spec:
+  selector:
+    matchLabels:
+      app: frontend-yolo
+  template:
+    metadata:
+      labels:
+        app: frontend-yolo
+    spec:
+      containers:
+      - name: yolo-frontend 
+        image: thandie/yolo-frontend:1.0.4
+        ports:
+        - containerPort: 3000
