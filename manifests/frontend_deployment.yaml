@@ -15,4 +15,4 @@ spec:
       - name: yolo-frontend 
         image: thandie/yolo-frontend:1.0.4
         ports:
-        - containerPort: 3000
+        - containerPort: 80
