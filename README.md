@@ -1,50 +1,30 @@
-# YOLO E-Commerce (Dockerized Application)
+# YOLO App - GKE Deployment
 
-## Project Overview
+##  Overview
+This project demonstrates the deployment of a full-stack YOLO application (frontend, backend, and MongoDB) on Google Kubernetes Engine (GKE). The goal was to apply orchestration concepts using Deployments, Services, and StatefulSets.
 
-This project automates the deployment of the **YOLO e-commerce web application** using **Vagrant**, **Ansible**, and **Docker**.  
-It provisions a virtual machine, installs Docker, pulls the necessary container images from Docker Hub, and runs the application stack (MongoDB, backend, frontend) in isolated containers.
+##  Live URLs
+- Frontend: http://136.113.110.40
+- Backend: http://136.115.226.49:5000
 
-The goal of this project is to demonstrate **Infrastructure as Code ** using **Ansible roles**
+##  Components
+- **Frontend** → React app deployed as a LoadBalancer service  
+- **Backend** → Flask API (LoadBalancer)  
+- **Database** → MongoDB StatefulSet with Persistent VolumeClaim
 
-## Setup Instructions
+##  Current Status
+All pods and services are running on GKE.  
+Frontend loads successfully, but currently fails to fetch data from the backend due to a **CORS/network restriction** between external IPs.
 
-### 1. Prerequisites
-Ensure the following are installed on your host machine:
-- Vagrant
-- VirtualBox
-- Git
-
-### 2. Clone this repository
-```bash
-git clone https://github.com/LeslieKogi/yolo.git
-cd yolo
-```
-
-### 3. Start and provision the VM
-```bash
-vagrant provision
-```
-
-### 4.Verify setup
-```bash
-vagrant ssh
-docker ps
-```
-
-## Summary
-
-- The Vagrantfile provisions the virtual machine, ansible runs inside the VM
-- The playbook executes the roles in sequence(basic-setup -> docker -> database -> backend -> frontend )
-- The roles install dependancies, pull images and start containers.
-- The application becomes accessible through the forwarded ports.
+##  Debugging Steps Attempted
+- Verified all services are exposed via LoadBalancer.  
+- Confirmed backend reachable internally (via kubectl exec).  
+- Adjusted frontend URLs for backend service.  
+- Verified successful builds and container images pushed to Artifact Registry.
 
 ## Screenshots
-- Results of running Vagrant provision
- ![Sucessful vagrant provision](./sucessful%20provision.png)
-
-- Containers running in VM
- ![Containers running in VM ](./VM%20containers.png)
+- Screenshot of running pods and services on GKE , confirming sucessful deployment
+![Sucessful deployment](./deployment1ongke.png)
 
 ### Author 
 Leslie Kogi
