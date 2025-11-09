@@ -4,11 +4,12 @@ metadata:
   name: backend-service
   namespace: default
 spec:
-  type: ClusterIP
+  type: LoadBalancer
   selector:
     app: backend
   ports:
   - port: 5000
     protocol: TCP
     targetPort: 5000
+    nodePort: 30050
     
